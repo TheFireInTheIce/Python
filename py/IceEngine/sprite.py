@@ -49,7 +49,7 @@ class Animate:
         self.row = row
 
     def update(self):
-        self.col = (self.col+1) % 3
+        self.col = (self.col+1) % self.frame.cols
 
 
 class Sprite(component.ComponentObj):
@@ -64,6 +64,8 @@ class Sprite(component.ComponentObj):
         self.sh = 1
         self.angle = 0
 
+        self.show=True
+
         self.frames = Animate(img, rows, cols)
         self.img = self.frames.get()
         self.w, self.h = self.img.get_width(), self.img.get_height()
@@ -71,6 +73,7 @@ class Sprite(component.ComponentObj):
         self.children = []
 
     def draw(self, screen, x=0, y=0):
+        if not self.show:return
         self.img = self.frames.get()
         if self.angle != 0:
             self.img = pygame.transform.rotate(self.img, self.angle)

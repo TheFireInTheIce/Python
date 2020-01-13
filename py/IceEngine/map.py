@@ -7,6 +7,7 @@ import pygame
 import json
 import os
 import sys
+import copy
 from os import path
 
 
@@ -86,7 +87,7 @@ class CheckMap:
         self.bw, self.bh = bw, bh
 
     def getPoint(self, x, y):
-        return self.mapData[x//self.bw][y//self.bh]
+        return self.mapData[int((y+1)//self.bh)][int((x+1)//self.bw)]
 
     def checkPoint(self, x, y):
         return self.cData[self.getPoint(x, y)]
@@ -96,7 +97,7 @@ class CheckMap:
         ex, ey = (x+w)//self.bw, (y+h)//self.bh
         for i in range(sx, ex+1):
             for j in range(sy, ey+1):
-                if self.cData[self.mapData[i][j]]:
+                if self.cData[self.mapData[j][i]]:
                     return True
         return False
 
@@ -116,9 +117,9 @@ class Map(component.ComponentObj):
         self.bw = tiledset.bw
         self.bh = tiledset.bh
         self.tiledSet = tiledset
-        self.checkmap = checkmap
-        self.checkmap.bw=self.bw
-        self.checkmap.bh=self.bh
+        self.checkMap = checkmap
+        self.checkMap.bw=self.bw
+        self.checkMap.bh=self.bh
 
     def draw(self, screen, x=0, y=0):
         self.tiledSet.sw = self.sw
@@ -126,12 +127,17 @@ class Map(component.ComponentObj):
         self.tiledSet.draw(screen, x+self.x, y+self.y)
         self.bw = self.tiledSet.bw
         self.bh = self.tiledSet.bh
+        self.checkMap.bw,self.checkMap.bh=self.bw,self.bh
 
     def checkSprite(self, sprite):
         return self.checkMap.checkSprite(sprite)
 
     def onPoint(self, x, y):
         return self.tiledSet.onPoint(x, y)
+
+    def getPoint(self, x, y):
+        return self.tiledSet.mapData[int((y+1)//self.bh)][int((x+1)//self.bw)]
+
 
 
 class Maps(component.ComponentObj):
@@ -186,6 +192,9 @@ def loadTiledTileSet(obj,assets):
     imgdatas = {}
     for i in obj['tilesets']:
         if i['name']==config.tiledCollisionTileName:
+            d=tools.dic()
+            d.t=i['firstgid']
+            imgdatas[config.tiledCollisionTileName]=d
             continue
         d = tools.dic()
         args = loadTiledObjArgs(i['properties'])
@@ -234,7 +243,10 @@ def loadTiledMap(obj, imgdatas):
                 w = i['width']
                 h = i['height']
                 cMapData=arrayToMapData(i['data'],w)
-                collision=CheckMap(cMapData,0,0)
+                cData={}
+                cData[0]=False
+                cData[imgdatas[config.tiledCollisionTileName].t]=True
+                collision=CheckMap(cMapData,0,0,cData)
         else:
             for o in i['objects']:
                 s=tools.dic()
@@ -254,8 +266,7 @@ def loadTiled(fp, assets, scene):
         checkmap=CheckMap([[0 for _ in range(mapdatas[0].w)] for _ in range(mapdatas[0].h)],mapdatas[0].bw,mapdatas[0].bh)
     maps=[]
     for m in mapdatas:
-        o=Map(m,checkmap)
-        maps.append(o)
-        scene.addSprite(o)
+        maps.append(Map(m,checkmap))
+        scene.addSprite(maps[-1])
     return maps,objects
 

@@ -27,11 +27,11 @@ class Game(event.EventObj):
         self.on(event.events.quit,self.exit)
     def exit(self,event,this):
         os._exit(0)
-    def init(self, width, height):
+    def init(self,title, width, height):
         assert self.screen == None, "当前屏幕对象不为空,已经进行过初始化,不能再次初始化"
         pygame.init()
         #self.screen = pygame.display.set_mode((width, height))
-        self.screen=screen.Screen((width,height))
+        self.screen=screen.Screen(title,(width,height))
 
     def addScene(self, scene: Scene):
         self.scenes.append(scene)

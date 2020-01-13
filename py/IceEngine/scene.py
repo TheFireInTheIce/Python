@@ -20,6 +20,13 @@ class Scene(event.EventObj):
                 return i
         assert False,"当前场景没有此精灵"
 
+    def insertSprite(self,obj,sprite):
+        if type(obj)==int:
+            self.sprites.insert(obj,sprite)
+        else:
+            self.sprites.insert(self.sprites.index(obj)+1,sprite)
+
+
     def step(self,time):
         self.update(time)
         for i in self.sprites:
