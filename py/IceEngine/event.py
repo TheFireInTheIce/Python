@@ -166,3 +166,8 @@ class Event:
             self.keyChar=keyCode.find(self.keyCode)
         else:
             pass
+
+class UserEvent:
+    def __init__(self,type,data):
+        self.type=type
+        self.data=tools.dic(data)

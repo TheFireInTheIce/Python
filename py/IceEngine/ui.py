@@ -140,8 +140,8 @@ class Text(component.ComponentObj):
         self.textColor=(0,0,0,255)
         self.x=0
         self.y=0
-        self.init()
         self.inited=True
+        self.init()
     def init(self):
         if not self.inited:return
         self.fontObj = pygame.font.Font(os.path.join(
@@ -155,11 +155,33 @@ class Text(component.ComponentObj):
     def onPoint(self,x,y):
         x-=self.x
         y-=self.y
+        x=int(x)
+        y=int(y)
         if x>=0 and x<self.w and y>=0 and y<self.h:
-            if self.img.get_at(x,y)!=(0,0,0,0):
+            if self.img.get_at((x,y))!=(0,0,0,0):
                 return self
         return None
     def __setattr__(self,item,value):
         self.__dict__[item]=value
-        if item in ('font','text','fontSize','textColor','bgColor'):
+        if 'inited' in self.__dict__ and self.inited and item in ('font','text','fontSize','textColor','bgColor'):
             self.init()
+
+class MultiLineText(Text):
+    def __init__(self,text):
+        super().__init__(text)
+        self.init()
+        self.inited=True
+    def init(self):
+        #if 'texts' not in self.__dict__:return
+        self.texts=self.text.split('\n')
+        self.fontObj = pygame.font.Font(os.path.join(
+        config.fontPath, config[self.font]) if self.font else None, self.fontSize)
+        self.h=len(self.texts)*self.fontObj.size('l')[1]
+        self.w=0
+        for i in self.texts:
+            if self.fontObj.size(i)[0]>self.w:
+                self.w=self.fontObj.size(i)[0]
+        self.img = pygame.Surface((self.w, self.h)).convert_alpha()
+        self.img.fill(self.bgColor)
+        for text,y in zip(self.texts,range(0,len(self.texts)*self.fontObj.size('l')[1],self.fontObj.size('l')[1])):
+            self.img.blit(self.fontObj.render(text, True,self.textColor),(0,y))

@@ -20,6 +20,7 @@ class Game(event.EventObj):
         self.scenes = []
         self.scene = -1
         self.screen = None
+        self.hud=None
         self.assets = tools.dic()
         self.fps = config.fps
         self.lastUpdateTime = time.time()
@@ -32,6 +33,7 @@ class Game(event.EventObj):
         pygame.init()
         #self.screen = pygame.display.set_mode((width, height))
         self.screen=screen.Screen(title,(width,height))
+        self.hud=screen.HUD((width,height),self)
 
     def addScene(self, scene: Scene):
         self.scenes.append(scene)
@@ -50,13 +52,17 @@ class Game(event.EventObj):
     def step(self, time):
         assert self.scene != -1, "没有场景对象,请先创建并设置场景"
         self.update(time)
+        self.hud.scene.step(time)
         self.scenes[self.scene].step(time)
 
     def paint(self):
         assert self.scene != -1, "没有场景对象,请先创建并设置场景"
         self.screen.fill(config.bgColor)
+        self.hud.fill((0,0,0,0))
         self.draw()
         self.scenes[self.scene].draw(self.screen)
+        self.hud.scene.draw(self.hud)
+        self.screen.screen.blit(self.hud.hud,(0,0))
         pygame.display.update()
 
     def draw(self): pass
@@ -77,6 +83,9 @@ class Game(event.EventObj):
                             
                     elif i == event.events.quit:
                         self.event(el)
+
+                    elif i in (event.events.keydown,event.events.keyup):
+                        self.scenes[self.scene].event(el)
             mx, my = pygame.mouse.get_pos()
             self.scenes[self.scene].getSpriteOnPoint(mx, my).event(event.Event(event.events.mouseover, tools.dic({
                 "pos": (mx, my)

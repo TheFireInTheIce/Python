@@ -1,3 +1,5 @@
+import threading
+import time
 #特殊字典类
 class dic:
     def __init__(self,dict={}):
@@ -29,3 +31,10 @@ class enum:
     def __getattr__(self,item):
         return self.dic[item]
     __getitem__=__getattr__
+
+def setTimeOut(function,ti):
+    def p():
+        time.sleep(ti)
+        function()
+    t=threading.Thread(None,p)
+    t.start()

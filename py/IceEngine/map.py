@@ -14,7 +14,7 @@ from os import path
 class TiledSet(component.ComponentObj):
     def __init__(self, mapData, img, rows, cols, imgData=None):
         """
-        描述:一个游戏中的地图对象,主要用于俯视图
+        描述:一个游戏中的图块集对象,主要用于俯视图
         参数:
         TiledSet(mapData,img,rows,cols,imgData=None):以mapData二维数组创建地图,
         mapData[i][j]显示imgData[mapData[i][j]]
@@ -32,18 +32,26 @@ class TiledSet(component.ComponentObj):
         self.mapData = mapData
         self.w = len(mapData)
         self.h = len(mapData[0])
-        self.sheet = sprite.Sheet(img, rows, cols)
-        self.bw, self.bh = self.sheet.get(
+        self.show=img != None
+        if self.show:
+            self.sheet = sprite.Sheet(img, rows, cols)
+            self.bw, self.bh = self.sheet.get(
             0, 0).get_width(), self.sheet.get(0, 0).get_height()
-        if imgData != None:
-            self.imgData = imgData
+            if imgData != None:
+                self.imgData = imgData
+            else:
+                self.imgData = {}
+                for i in range(rows*cols):
+                    self.imgData[i] = (i//cols, i % cols)
+                self.imgData[-1] = None
         else:
-            self.imgData = {}
-            for i in range(rows*cols):
-                self.imgData[i] = (i//cols, i % cols)
-            self.imgData[-1] = None
+            self.bw=0
+            self.bh=0
+            self.sheet=None
+            self.imgData=None
 
     def draw(self, screen, x=0, y=0):
+        if not self.show:return
         ix = []
         self.bw, self.bh = self.sheet.get(
             0, 0).get_width(), self.sheet.get(0, 0).get_height()
@@ -61,6 +69,7 @@ class TiledSet(component.ComponentObj):
                                 (self.x+j*self.bw, self.y+i*self.bh))
 
     def onPoint(self, x, y):
+        if not self.show:return None
         bx, by = x-self.x, y-self.y
         self.bw, self.bh = self.sheet.get(
             0, 0).get_width(), self.sheet.get(0, 0).get_height()
@@ -69,7 +78,7 @@ class TiledSet(component.ComponentObj):
         return (self if bx >= 0 and bx < self.bw*self.w and by >= 0 and by < self.bh*self.h else None)
 
     def resetSize(self, sw, sh):
-        if 'sheet' in self.__dict__:
+        if 'sheet' in self.__dict__ and self.show:
             self.bw = sw*self.sheet.get(0, 0).get_width()
             self.bh = sh*self.sheet.get(0, 0).get_height()
 
@@ -221,7 +230,7 @@ def arrayToMapData(array,w):
             line.clear()
     return data
 
-def loadTiledMap(obj, imgdatas):
+def loadTiledMap(obj, imgdatas,classes):
     maps = []
     collision=None
     objects=[]
@@ -231,14 +240,34 @@ def loadTiledMap(obj, imgdatas):
                 w = i['width']
                 h = i['height']
                 data=arrayToMapData(i['data'],w)
-                args = loadTiledObjArgs(i['properties'])
-                aname = args['img']
-                tileSet = imgdatas[aname]
-
-                maps.append(
-                    TiledSet(data, tileSet.img, tileSet.rows,
-                             tileSet.cols, tileSet.imgdata)
-                )
+                tileSet=None
+                if i.get('properties',None) != None:
+                    args = loadTiledObjArgs(i['properties'])
+                    aname = args['img']
+                    tileSet = imgdatas[aname]
+                if not classes is None:
+                    for j in range(len(data)):
+                        for k in range(len(data[j])):
+                            if data[j][k] in classes:
+                                t=data[j][k]
+                                objects.append(tools.dic({
+                                    'x':k,
+                                    'y':j,
+                                    'w':obj['tilewidth'],
+                                    'h':obj['tileheight'],
+                                    'type':t,
+                                    'angle':0,
+                                    'name':i['name']+'-obj'
+                                }))
+                if tileSet !=None:
+                    maps.append(
+                        TiledSet(data, tileSet.img, tileSet.rows,
+                                 tileSet.cols, tileSet.imgdata)
+                    )
+                else:
+                    maps.append(
+                        TiledSet(data,None,0,0,None)
+                    )
             else:
                 w = i['width']
                 h = i['height']
@@ -250,23 +279,27 @@ def loadTiledMap(obj, imgdatas):
         else:
             for o in i['objects']:
                 s=tools.dic()
-                s.x,s.y,s.w,s.h=o['x'],o['y']-16,o['width'],o['height']
+                s.x,s.y,s.w,s.h=o['x'],o['y'],o['width'],o['height']
                 s.type=o['type']
                 s.angle=o['rotation']
                 s.name=o['name']
+                s.args={}
+                if o.get('properties',None)!=None:
+                    args=loadTiledObjArgs(o['properties'])
+                    s.args=args
                 objects.append(s)
     return (maps,collision,objects)
 
 
-def loadTiled(fp, assets, scene):
+def loadTiled(fp, assets, scene,classes:list=None):
     obj=loadTiledFile(fp)
     imgData=loadTiledTileSet(obj,assets)
-    mapdatas,checkmap,objects=loadTiledMap(obj,imgData)
+    mapdatas,checkmap,objects=loadTiledMap(obj,imgData,classes)
     if not checkmap:
         checkmap=CheckMap([[0 for _ in range(mapdatas[0].w)] for _ in range(mapdatas[0].h)],mapdatas[0].bw,mapdatas[0].bh)
     maps=[]
     for m in mapdatas:
-        maps.append(Map(m,checkmap))
+        maps.append(Map(m,copy.copy(checkmap)))
         scene.addSprite(maps[-1])
     return maps,objects
 
