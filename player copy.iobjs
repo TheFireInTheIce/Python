@@ -1,4 +1,5 @@
 Player("player"):
+    name:"player"
     x:16
     y:16
     display:
@@ -32,3 +33,5 @@ Player("player"):
                 col:0
             children:[]
     ]
+Map:
+...

@@ -1,5 +1,6 @@
 import threading
 import time
+import copy
 #特殊字典类
 class dic:
     def __init__(self,dict={}):
@@ -22,6 +23,12 @@ class dic:
 
     def __iter__(self):
         return self.__dict__.__iter__()
+
+    def __add__(self,item):
+        x=copy.deepcopy(self)
+        for i in item:
+            x[i]=item[i]
+        return x
 
 class enum:
     def __init__(self,enums:list):
