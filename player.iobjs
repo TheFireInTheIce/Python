@@ -1,0 +1,24 @@
+halfWater:
+    name:"player-halfWater"
+    type:"Sprite"
+    x:0
+    y:0
+    display:
+        show:True
+        asset:assets.sprites
+        rows:1
+        cols:8
+        row:0
+        col:2
+    children:[]
+player:
+    name:"player"
+    type:"Player"
+    x:16
+    y:16
+    display:
+        show:True
+        asset:assets.store
+        cols:2
+        rows:8
+    children:[halfWater]
