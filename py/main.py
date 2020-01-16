@@ -26,12 +26,11 @@ sbutton.y=300-sbutton.h/2
 sbutton.on(ie.event.events.click,lambda event,this: game.switchScene('main'))
 scene = ie.scene.Scene("main", game)
 
-maps,mapObjects=ie.map.loadTiled('../test.json',game.assets,scene,[6,7,8])
+maps,mapObjects=ie.map.loadTiled('../asset/map/test.json',game.assets,scene,[6,7,8])
 backMap,frontMap=maps
 frontMap.sw=frontMap.sh=backMap.sw=backMap.sh=2
 
 board=ie.ui.MultiLineText("")
-#board.font="华文琥珀"
 board.fontSize=20
 board.textColor=(255,255,255,255)
 board.bgColor=(0,0,0,255)
@@ -49,7 +48,7 @@ ways=ie.tools.dic({
 tileSize=32
 playerMaxScreenPos=500
 playerMinScreenPos=100
-
+@game.Class('name x y a'.split(" "))
 class Role(ie.component.ComponentObj):
     def __init__(self,name,x,y,sdata:dict):
         super().__init__()
@@ -116,6 +115,7 @@ class Role(ie.component.ComponentObj):
         elif item=='y':
             self.s.y=self.y
 
+@game.Class("asset name x y t".split(" "))
 class ObjNpc(Role):
     ws=['up','right','down','left']
     def __init__(self,asset,name,x,y,t):
@@ -137,7 +137,8 @@ class ObjNpc(Role):
     def walk(self,this,time):
         self.walkFunction(this,time)
         if self.walking:self.s.frames.update()
-        
+
+@game.Class("name x y t says".split(" "))
 class MapNPC(Role):
     def __init__(self,name,x,y,t,says):
         super().__init__(name,x*tileSize,y*tileSize,{'img':'sprites','rows':1,'cols':8})
@@ -159,6 +160,7 @@ class MapNPC(Role):
             ie.tools.setTimeOut(self.zsq(self.says[i]),i*2)
         ie.tools.setTimeOut(self.zsq(""),len(self.says)*2)
 
+@game.Class("x y".split(" "))
 class Player(Role):
     def __init__(self,x,y):
         super().__init__('player',x,y,{'img':'player','rows':4,'cols':2})
@@ -226,5 +228,4 @@ for i in mapObjects:
     scene.addSprite(npcs[-1].s)
 
 if __name__ == "__main__":
-    
     game.start()

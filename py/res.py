@@ -1,16 +1,19 @@
 from IceEngine import tools
-cres=[
-    {"name":"items","path":"../img/items.png"},
-    {"name":"player","path":"../img/player1.png"},
-    {"name":"enemy1","path":"../img/enemy1.png"},
-    {"name":"enemy2","path":"../img/enemy2.png"},
-    {"name":"monster1","path":"../img/monster1.png"},
-    {"name":"monster2","path":"../img/monster2.png"},
-    {"name":"monster3","path":"../img/monster3.png"},
-    {"name":"sprites","path":"../img/sprites.png"}
+imgbase='../asset/img/'
+cimg=[
+    {"name":"items","path":"items.png"},
+    {"name":"player","path":"player1.png"},
+    {"name":"enemy1","path":"enemy1.png"},
+    {"name":"enemy2","path":"enemy2.png"},
+    {"name":"monster1","path":"monster1.png"},
+    {"name":"monster2","path":"monster2.png"},
+    {"name":"monster3","path":"monster3.png"},
+    {"name":"sprites","path":"sprites.png"}
 ]
 
 res=[]
-for i in cres:
-    res.append(tools.dic(i))
+for i in cimg:
+    x=i
+    x['path']=imgbase+x['path']
+    res.append(tools.dic(x))
     

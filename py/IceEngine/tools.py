@@ -13,7 +13,15 @@ class dic:
         self.__dict__[item]=value
 
     def __str__(self):
-        return str(self.__dict__)
+        s="{"
+        for i in self.__dict__:
+            if type(self.__dict__[i])==list:
+                s+=i+": "+listToStr(self.__dict__[i])+", "
+            else:
+                s+=i+": "+str(self.__dict__[i])+", "
+        s=s[:-2]
+        s+="}"
+        return s
 
     def find(self,item):
         for i in self.__dict__:
@@ -45,3 +53,14 @@ def setTimeOut(function,ti):
         function()
     t=threading.Thread(None,p)
     t.start()
+
+
+def listToStr(listO):
+    print("!")
+    s='['
+    if len(listO)!=0:
+        for i in range(len(listO)-1):
+            s+=str(listO[i])+', '
+        s+=str(listO[-1])
+    s+=']'
+    return s

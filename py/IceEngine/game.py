@@ -5,19 +5,28 @@ import sys
 from pygame import locals as pc
 import pygame
 
-from .sprite import *
-from .component import *
-from .scene import *
+from . import sprite
+from . import component
+from . import scene
 from . import event
 from . import tools
 from . import screen
 from .config import config
+from . import ui
 
 
 class Game(event.EventObj):
     def __init__(self):
         super().__init__()
         self.scenes = []
+        self.classes = {
+            "Sprite":sprite.Sprite,
+            "ImgButton":ui.ImgButton,
+            "TextButton":ui.TextButton,
+            "Switch":ui.Switch,
+            "Text":ui.Text,
+            "MultiLineText":ui.MultiLineText
+        }
         self.scene = -1
         self.screen = None
         self.hud=None
@@ -35,10 +44,10 @@ class Game(event.EventObj):
         self.screen=screen.Screen(title,(width,height))
         self.hud=screen.HUD((width,height),self)
 
-    def addScene(self, scene: Scene):
+    def addScene(self, scene: scene.Scene):
         self.scenes.append(scene)
 
-    def removeScene(self, scene: Scene):
+    def removeScene(self, scene: scene.Scene):
         assert scene in self.scenes, "没有此场景"
         self.scenes.remove(scene)
 
@@ -107,3 +116,9 @@ class Game(event.EventObj):
 
     def key(self, key):
         return self.eventCatcher.keys[key]
+
+    def Class(self,args):
+        def f(c):
+            self.classes[c.__name__]=(args,c)
+            return c
+        return f

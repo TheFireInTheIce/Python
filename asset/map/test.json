@@ -16,7 +16,7 @@
          "name":"collisionLayer",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":20,
          "x":0,
          "y":0
@@ -34,7 +34,7 @@
                  "value":"sprites"
                 }],
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":20,
          "x":0,
          "y":0
@@ -141,7 +141,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":8,
+ "nextobjectid":9,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.3.1",
@@ -150,7 +150,7 @@
         {
          "columns":8,
          "firstgid":1,
-         "image":"img\/sprites.png",
+         "image":"..\/img\/sprites.png",
          "imageheight":16,
          "imagewidth":128,
          "margin":0,
@@ -169,7 +169,7 @@
         {
          "columns":2,
          "firstgid":9,
-         "image":"img\/player1.png",
+         "image":"..\/img\/player1.png",
          "imageheight":64,
          "imagewidth":32,
          "margin":0,
@@ -188,7 +188,7 @@
         {
          "columns":1,
          "firstgid":17,
-         "image":"img\/collision.png",
+         "image":"..\/img\/collision.png",
          "imageheight":16,
          "imagewidth":16,
          "margin":0,

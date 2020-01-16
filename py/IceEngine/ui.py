@@ -64,7 +64,7 @@ def TextButton(text, textColor=(255, 255, 255), bgColor=(0, 0, 0), fontSize=30, 
     return ImgButton(up, down)
 
 
-class switch(component.ComponentObj):
+class Switch(component.ComponentObj):
     def __init__(self):
         super().__init__()
         self.x = 0

@@ -1,15 +1,14 @@
 Player("player"):
-    name:"player"
     x:16
     y:16
     display:
         show:True
-        asset:assets.store
+        asset:assets.player
         cols:2
         rows:8
+    args:(x,y)
     children:[
         Sprite():
-            name:"player-halfWater"
             x:0
             y:0
             display:
@@ -20,8 +19,8 @@ Player("player"):
                 row:0
                 col:2
             children:[]
+            args:(name,display.asset,display.rows,display.cols)
         Sword():
-            name:"player-sword"
             x:16
             y:8
             display:
@@ -32,6 +31,5 @@ Player("player"):
                 row:0
                 col:0
             children:[]
+            args:()
     ]
-Map:
-...
