@@ -1,5 +1,5 @@
 import pygame
-from . import event
+from ..core import event
 
 class Scene(event.EventObj):
     def __init__(self,id,game):

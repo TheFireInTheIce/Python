@@ -1,0 +1,4 @@
+Text("loginText"):
+    text:"Login"
+    x:225
+    y:50

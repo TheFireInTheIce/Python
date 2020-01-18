@@ -2,17 +2,18 @@
 
 def f(*args):
     def r(f):
-        def m(name):
+        def m(*args):
             print(args)
-            f(name)
+            f(*args)
             print("over")
         return m
     return r
 
 @f([1,2,3])
 class t:
-    def __init__(self,name):
+    def __init__(self,name,age):
         print("init!")
         print("my name is",name)
+        print("I am",age,"years old")
 
-t('孔德玮')
+t('孔德玮',13)

@@ -1,12 +1,12 @@
-from . import event
-from . import component
-from .config import config
-from . import tools
+from ..core import event
+from ..core import component
+from ..core.config import config
+from ..core import tools
 import os
 import pygame
 import math
 
-
+tools.Class("up down".split(" "))
 class ImgButton(component.ComponentObj):
     def __init__(self, up, down):
         super().__init__()
@@ -49,7 +49,7 @@ class ImgButton(component.ComponentObj):
                 print(self.img.get_at((int(bx), int(by))))
         return None
 
-
+tools.Class("text textColor bgColor fontSize font".split(" "))
 def TextButton(text, textColor=(255, 255, 255), bgColor=(0, 0, 0), fontSize=30, font="微软雅黑"):
     font = pygame.font.Font(os.path.join(
         config.fontPath, config[font]) if font else None, fontSize)
@@ -63,7 +63,7 @@ def TextButton(text, textColor=(255, 255, 255), bgColor=(0, 0, 0), fontSize=30, 
     down.blit(ti, (15, 15))
     return ImgButton(up, down)
 
-
+tools.Class([])
 class Switch(component.ComponentObj):
     def __init__(self):
         super().__init__()
@@ -129,6 +129,7 @@ class Switch(component.ComponentObj):
             return self
         return None
 
+tools.Class("text".split(" "))
 class Text(component.ComponentObj):
     def __init__(self,text):
         super().__init__()
@@ -166,6 +167,7 @@ class Text(component.ComponentObj):
         if 'inited' in self.__dict__ and self.inited and item in ('font','text','fontSize','textColor','bgColor'):
             self.init()
 
+tools.Class("text".split(" "))
 class MultiLineText(Text):
     def __init__(self,text):
         super().__init__(text)
@@ -185,3 +187,15 @@ class MultiLineText(Text):
         self.img.fill(self.bgColor)
         for text,y in zip(self.texts,range(0,len(self.texts)*self.fontObj.size('l')[1],self.fontObj.size('l')[1])):
             self.img.blit(self.fontObj.render(text, True,self.textColor),(0,y))
+
+tools.Class([])
+class Div:
+    def __init__(self):
+        self.children=[]
+    def addUi(self,ui):
+        self.children.append(ui)
+    def removeUi(self,ui):
+        self.children.remove(ui)
+    def draw(self,screen,x=0,y=0):
+        for i in self.children:
+            self.children.draw(screen,x,y)

@@ -1,6 +1,6 @@
 import pygame
-from . import event
-from . import component
+from ..core import event
+from ..core import component
 
 
 class Sheet:

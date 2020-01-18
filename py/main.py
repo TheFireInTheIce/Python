@@ -48,7 +48,7 @@ ways=ie.tools.dic({
 tileSize=32
 playerMaxScreenPos=500
 playerMinScreenPos=100
-@game.Class('name x y a'.split(" "))
+@ie.Class('name x y a'.split(" "))
 class Role(ie.component.ComponentObj):
     def __init__(self,name,x,y,sdata:dict):
         super().__init__()
@@ -115,7 +115,7 @@ class Role(ie.component.ComponentObj):
         elif item=='y':
             self.s.y=self.y
 
-@game.Class("asset name x y t".split(" "))
+@ie.Class("asset name x y t".split(" "))
 class ObjNpc(Role):
     ws=['up','right','down','left']
     def __init__(self,asset,name,x,y,t):
@@ -138,7 +138,7 @@ class ObjNpc(Role):
         self.walkFunction(this,time)
         if self.walking:self.s.frames.update()
 
-@game.Class("name x y t says".split(" "))
+@ie.Class("name x y t says".split(" "))
 class MapNPC(Role):
     def __init__(self,name,x,y,t,says):
         super().__init__(name,x*tileSize,y*tileSize,{'img':'sprites','rows':1,'cols':8})
@@ -160,7 +160,7 @@ class MapNPC(Role):
             ie.tools.setTimeOut(self.zsq(self.says[i]),i*2)
         ie.tools.setTimeOut(self.zsq(""),len(self.says)*2)
 
-@game.Class("x y".split(" "))
+@ie.Class("x y".split(" "))
 class Player(Role):
     def __init__(self,x,y):
         super().__init__('player',x,y,{'img':'player','rows':4,'cols':2})

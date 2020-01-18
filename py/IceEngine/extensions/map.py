@@ -1,8 +1,8 @@
-from . import sprite
-from . import component
-from . import tools
-from . import event
-from .config import config
+from ..models import sprite
+from ..core import component
+from ..core import tools
+from ..core import event
+from ..core.config import config
 import pygame
 import json
 import os

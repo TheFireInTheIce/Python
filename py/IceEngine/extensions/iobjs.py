@@ -1,8 +1,6 @@
-# from . import tools
-# from . import sprite
+from ..core import tools
+from ..models import sprite
 # from . import ui
-import tools
-import sprite
 
 import re
 import os
@@ -161,6 +159,7 @@ def parseObj(text, game, defaultS):
         l, n = skipSpace(lines[i])
         #跳过空行:
         if l=='':
+            i+=1
             continue
         # 减去默认缩进
         n -= defaultS
@@ -282,7 +281,7 @@ def parseObj(text, game, defaultS):
             # 获得属性和值的字符串
             property, value = l.split(":")
             # 作用域对象,包含game,obj和当前对象
-            g = game+obj+stack[-n]
+            g = tools.dic({'screen':game.screen,'scene':game.scenes[game.scene]})+obj+stack[-n]
             # 解析值
             v = parseValue(value,g)
 
@@ -303,19 +302,26 @@ def newObj(obj,game):
         创建好的对象
     """
     #对象数据
-    data=obj[i]
-    #对象的显示数据
-    displayData=data.display
-    #对象的帧
-    a=sprite.Animate(displayData.asset,displayData.rows,displayData.cols)
-    a.setFrame(displayData.row,displayData.col)
+    data=obj
+    displayData=a=None
+    if data.has('display'):
+        #对象的显示数据
+        displayData=data.display
+        #对象的帧
+        a=sprite.Animate(displayData.asset,displayData.rows,displayData.cols)
+        a.setFrame(displayData.row,displayData.col)
     #对象的参数们
     l=[]
-    for arg in game.classes[d.type][0]:
+    print(tools.classes)
+    for arg in tools.classes[data.type][0]:
         #将每个参数解析并添加到参数列表
         l.append(parseValue(arg,data))
     #创建对象,特殊语法:f(a,b)=f(*[a,b])
-    o=game.classes[d.type][1](*l)
+    o=tools.classes[d.type][1](*l)
+    #将剩余属性赋值给对象
+    for sarg in data:
+        if not sarg in l:
+            eval("o."+sarg+"="+a,{'a':data[sarg]})
     #递归调用创建子对象
     for j in data.children:
         o.children.append(newObj(j))
@@ -336,7 +342,7 @@ def createObj(obj, game):
         if i == '__uuid':
             continue
         #创建对象
-        o=newObj(i,game)
+        o=newObj(obj[i],game)
         #添加至当前场景
         game.scenes[game.scene].addSprite(o)
 
@@ -346,21 +352,14 @@ def createObj(obj, game):
 
 
 def parse(fp,game):
+    print("start")
     text=openFile(fp)
+    print("openFile")
     data=parseObj(text,game,0)
+    print("parse")
     createObj(data,game)
+    print("create")
 
 
 
-# print("start")
-# t = openFile('../../player.iobjs')
-# r = (parseObj(t, tools.dic({
-#     'fps': 1/60,
-#     'assets': tools.dic({
-#         'player': "PlayerImg!",
-#         'items': "ItemImg!",
-#         'sprites': "SpriteImg!"
-#     })
-# }), 0))
-# print(r)
-# print("over")
+

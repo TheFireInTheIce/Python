@@ -29,11 +29,16 @@ class dic:
                 return i
         return None
 
+    def has(self,item):
+        return item in self.__dict__
+
     def __iter__(self):
         return self.__dict__.__iter__()
 
     def __add__(self,item):
-        x=copy.deepcopy(self)
+        x=dic()
+        for i in self.__dict__:
+            x[i]=self[i]
         for i in item:
             x[i]=item[i]
         return x
@@ -56,7 +61,6 @@ def setTimeOut(function,ti):
 
 
 def listToStr(listO):
-    print("!")
     s='['
     if len(listO)!=0:
         for i in range(len(listO)-1):
@@ -64,3 +68,13 @@ def listToStr(listO):
         s+=str(listO[-1])
     s+=']'
     return s
+
+classes = {}
+def Class(*args):
+    def r(c):
+        classes[c.__name__]=(args,c)
+        # def m(*args):
+        #     return c(*args)
+        # return m
+        return c
+    return r
