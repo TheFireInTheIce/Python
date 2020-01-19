@@ -3,41 +3,51 @@ import time
 import copy
 #特殊字典类
 class dic:
-    def __init__(self,dict={}):
-        for i in dict:
-            self[i]=dict[i]
-        
+    def __init__(self,dict=None):
+        self.dict={}
+        #如果传入参数
+        if dict!=None:
+            #将参数赋值给自己
+            for i in dict:
+                self[i]=dict[i]
+    def __setattr__(self,item,value):
+        if item=='dict':
+            super().__setattr__(item,value)
+            return
+        self.dict[item]=value
+    def __getattr__(self,item):
+        return self.dict[item]
     def __getitem__(self,item):
-        return self.__dict__[item]
+        return self.dict[item]
     def __setitem__(self,item,value):
-        self.__dict__[item]=value
+        self.dict[item]=value
 
     def __str__(self):
         s="{"
-        for i in self.__dict__:
-            if type(self.__dict__[i])==list:
-                s+=i+": "+listToStr(self.__dict__[i])+", "
+        for i in self.dict:
+            if type(self.dict[i])==list:
+                s+=i+": "+listToStr(self.dict[i])+", "
             else:
-                s+=i+": "+str(self.__dict__[i])+", "
+                s+=i+": "+str(self.dict[i])+", "
         s=s[:-2]
         s+="}"
         return s
 
     def find(self,item):
-        for i in self.__dict__:
-            if self.__dict__[i] == item:
+        for i in self.dict:
+            if self.dict[i] == item:
                 return i
         return None
 
     def has(self,item):
-        return item in self.__dict__
+        return item in self.dict
 
     def __iter__(self):
-        return self.__dict__.__iter__()
+        return self.dict.__iter__()
 
     def __add__(self,item):
         x=dic()
-        for i in self.__dict__:
+        for i in self.dict:
             x[i]=self[i]
         for i in item:
             x[i]=item[i]
@@ -73,8 +83,5 @@ classes = {}
 def Class(*args):
     def r(c):
         classes[c.__name__]=(args,c)
-        # def m(*args):
-        #     return c(*args)
-        # return m
         return c
     return r
