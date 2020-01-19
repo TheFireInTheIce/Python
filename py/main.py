@@ -5,14 +5,7 @@ import IceEngine as ie
 import res
 import time
 
-# ie.mImport(ie,'game')
-# ie.mImport(ie,'map')
-# ie.mImport(ie,'scene')
-# ie.mImport(ie,'component')
-# ie.mImport(ie,'sprite')
-# ie.mImport(ie,'ui')
-# ie.mImport(ie,'event')
-print(ie.Import)
+
 ie.Import('game')
 ie.Import('map')
 ie.Import('scene')
