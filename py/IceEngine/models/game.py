@@ -2,7 +2,7 @@ imports="""
 time
 os
 sys
-pygame,locals,pc
+pygame.locals,pc
 pygame
 sprite
 component
@@ -10,10 +10,10 @@ scene
 event
 tools
 screen
-config,config
+config.config
 ui
 """.strip("\n").replace("\n"," ").split(' ')
-print(imports)
+# print(imports)
 # import time
 # import os
 # import sys
@@ -125,4 +125,7 @@ def initModel():
 
         def key(self, key):
             return self.eventCatcher.keys[key]
+    return {
+        'Game':Game
+    }
 

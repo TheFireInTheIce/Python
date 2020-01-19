@@ -15,7 +15,7 @@
             "name": "Python: Main",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/py/main.py",
+            "program": "${workspaceFolder}/py/main copy.py",
             "console": "integratedTerminal"
         }
     ]

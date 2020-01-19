@@ -1,4 +1,5 @@
-from IceEngine import tools
+import IceEngine as ie
+ie.Import('tools')
 imgbase='../asset/img/'
 cimg=[
     {"name":"items","path":"items.png"},
@@ -15,5 +16,5 @@ res=[]
 for i in cimg:
     x=i
     x['path']=imgbase+x['path']
-    res.append(tools.dic(x))
+    res.append(ie.tools.dic(x))
     
