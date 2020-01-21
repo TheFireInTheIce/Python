@@ -1,3 +1,4 @@
-from IceEngine.core import model
+import IceEngine as ie
 import pretty_errors
-print(dir(model('game')))
+ie.Import('game')
+print(ie.game)

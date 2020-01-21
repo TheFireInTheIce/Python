@@ -1,5 +1,4 @@
 import IceEngine as ie
-ie.Import('tools')
 imgbase='../asset/img/'
 cimg=[
     {"name":"items","path":"items.png"},

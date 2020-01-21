@@ -1,18 +1,10 @@
-﻿import pygame
+﻿
+import pygame
 import os
 from pygame.locals import *
 import IceEngine as ie
 import res
 import time
-
-
-ie.Import('game')
-ie.Import('map')
-ie.Import('scene')
-ie.Import('component')
-ie.Import('sprite')
-ie.Import('ui')
-ie.Import('event')
 
 
 game = ie.game.Game()
@@ -239,4 +231,5 @@ for i in mapObjects:
     scene.addSprite(npcs[-1].s)
 
 if __name__ == "__main__":
+    print(ie.tools.classes)
     game.start()
