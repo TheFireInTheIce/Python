@@ -7,11 +7,11 @@ import res
 import time
 
 
-game = ie.game.Game()
+game = ie.Game()
 game.init("rpg game",600, 600)
 game.loadImages(res.res)
 
-sscene=ie.scene.Scene("start",game)
+sscene=ie.Scene("start",game)
 game.switchScene('start')
 
 text=ie.ui.Text('RPG 2.0')
@@ -27,7 +27,7 @@ sscene.addSprite(sbutton)
 sbutton.x=300-sbutton.w/2
 sbutton.y=300-sbutton.h/2
 sbutton.on(ie.event.events.click,lambda event,this: game.switchScene('main'))
-scene = ie.scene.Scene("main", game)
+scene = ie.Scene("main", game)
 
 maps,mapObjects=ie.map.loadTiled('../asset/map/test.json',game.assets,scene,[6,7,8])
 backMap,frontMap=maps
@@ -231,5 +231,4 @@ for i in mapObjects:
     scene.addSprite(npcs[-1].s)
 
 if __name__ == "__main__":
-    print(ie.tools.classes)
     game.start()
