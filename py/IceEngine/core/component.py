@@ -1,6 +1,7 @@
 import pygame
 from . import event
 
+
 class Component:
     def __init__(self, function, ctype="loop"):
         "init(function:执行的函数,被存储为对象的action属性,type:类型,有循环(loop),时间(int类型,秒)或次数('s'+str(int)))"
@@ -31,7 +32,7 @@ class Component:
 class ComponentObj(event.EventObj):
     def __init__(self):
         super().__init__()
-        self.components=[]
+        self.components = []
 
     def addComponent(self, component):
         self.components.append(component)

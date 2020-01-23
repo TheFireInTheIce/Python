@@ -1,10 +1,12 @@
-Div('scene'):
+Div("scene"):
     children:[
         Text("loginText"):
             text:"LoginScreen"
             w:9*50//2
-            x:screen.w//2-w//2
-            y:50
+            x:0
+            y:0
+            align:"center"
+            
             textColor:(255,0,0)
             fontSize:50
             font:"华文琥珀"
@@ -12,4 +14,8 @@ Div('scene'):
             text:"login"
             x:225
             y:loginText.y+100
+        Switch("loginSwitch"):
+            x:225
+            y:loginButton.y+100
+            state:True
     ]

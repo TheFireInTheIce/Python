@@ -17,26 +17,34 @@ class Game(event.EventObj):
     def __init__(self):
         super().__init__()
         self.scenes = []
-        
+
         self.scene = -1
         self.screen = None
-        self.hud=None
+        self.hud = None
         self.assets = tools.dic()
         self.fps = config.fps
         self.lastUpdateTime = time.time()
         self.eventCatcher = event.EventCatcher()
-        self.on(event.events.quit,self.exit)
-    def exit(self,event,this):
+        self.on(event.events.quit, self.exit)
+
+    def exit(self, event, this):
         os._exit(0)
-    def init(self,title, width, height):
+
+    def init(self, title, width, height):
         assert self.screen == None, "当前屏幕对象不为空,已经进行过初始化,不能再次初始化"
         pygame.init()
         #self.screen = pygame.display.set_mode((width, height))
-        self.screen=screen.Screen(title,(width,height))
-        self.hud=screen.HUD((width,height),self)
+        self.screen = screen.Screen(title, (width, height))
+        self.hud = screen.HUD((width, height), self)
 
     def addScene(self, scene: scene.Scene):
         self.scenes.append(scene)
+
+    @property
+    def currentScene(self):
+        if self.scene == -1:
+            return None
+        return self.scenes[self.scene]
 
     def removeScene(self, scene: scene.Scene):
         assert scene in self.scenes, "没有此场景"
@@ -58,11 +66,11 @@ class Game(event.EventObj):
     def paint(self):
         assert self.scene != -1, "没有场景对象,请先创建并设置场景"
         self.screen.fill(config.bgColor)
-        self.hud.fill((0,0,0,0))
+        self.hud.fill((0, 0, 0, 0))
         self.draw()
         self.scenes[self.scene].draw(self.screen)
         self.hud.scene.draw(self.hud)
-        self.screen.screen.blit(self.hud.hud,(0,0))
+        self.screen.screen.blit(self.hud.hud, (0, 0))
         pygame.display.update()
 
     def draw(self): pass
@@ -70,7 +78,7 @@ class Game(event.EventObj):
 
     def start(self):
         while True:
-            
+
             pygame.time.delay(int(self.fps*1000))
             for e in pygame.event.get():
                 eh = self.eventCatcher.classifyEvent(e)
@@ -81,11 +89,11 @@ class Game(event.EventObj):
                         obj = self.scenes[self.scene].getSpriteOnPoint(x, y)
                         if obj != None:
                             obj.event(el)
-                            
+
                     elif i == event.events.quit:
                         self.event(el)
 
-                    elif i in (event.events.keydown,event.events.keyup):
+                    elif i in (event.events.keydown, event.events.keyup):
                         self.scenes[self.scene].event(el)
             mx, my = pygame.mouse.get_pos()
             self.scenes[self.scene].getSpriteOnPoint(mx, my).event(event.Event(event.events.mouseover, tools.dic({
@@ -104,7 +112,7 @@ class Game(event.EventObj):
                 img = pygame.image.load(os.path.join(sys.path[0], i.path))
                 self.assets[i.name] = img.convert_alpha()
             else:
-                assert False,"文件"+p+"不存在!"
+                assert False, "文件"+p+"不存在!"
 
     def key(self, key):
         return self.eventCatcher.keys[key]

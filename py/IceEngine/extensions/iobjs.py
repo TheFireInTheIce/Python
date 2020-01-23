@@ -132,16 +132,18 @@ def skipSpace(string):
     sp = 0
 
     # 如果还有缩进
-    while e:=r_space.search(string, sp):
-            # 个数增加
+    e = r_space.search(string, sp)
+    while e:
+        # 个数增加
         n += 1
         # 起始位置后移
-        sp += e.span()[1]-e.span()[0]
+        sp += e.span()[1] - e.span()[0]
+        e = r_space.search(string, sp)
 
     return string[sp:], n
 
 
-def parseObj(text, game, defaultS,namespace=None):
+def parseObj(text, game, defaultS, namespace=None):
     """
     解析一个对象,并转为tools.dic格式
     in:
@@ -153,7 +155,7 @@ def parseObj(text, game, defaultS,namespace=None):
         返回的tools.dic对象
     """
     if namespace is None:
-        namespace=tools.dic()
+        namespace = tools.dic()
     # 将代码按行分割
     lines = text.split('\n')
     # 上一次循环的缩进个数
@@ -172,13 +174,15 @@ def parseObj(text, game, defaultS,namespace=None):
         if l == '':
             i += 1
             continue
+        print(l)
         # 减去默认缩进
         n -= defaultS
         # 作用域对象,包含game,obj和当前对象
         g = tools.dic(
-            {'screen': game.screen, 'scene': game.scenes[game.scene]})+obj+stack[-n]+namespace        
+            {'screen': game.screen, 'scene': game.scenes[game.scene]})+obj+stack[-n]+namespace
         # 如果比上一次的层次浅
-        if (x:=ln-n) >= 1:
+        x = ln-n
+        if x >= 1:
             # 恢复到指定层次
             for j in range(x):
                 stack.pop()
@@ -276,20 +280,20 @@ def parseObj(text, game, defaultS,namespace=None):
 
             # 数组中的对象们
             objs = []
-            #命名空间
-            namespace=tools.dic()
+            # 命名空间
+            namespace = tools.dic()
             for j in nlines:
                 # 递归调用解析数组中的对象
-                r = parseObj("\n".join(j), game, n+1,namespace)
-                objs.append(r)
-                namespace[r.name]=r
-                # # 查找便利结果
-                # for k in r:
-                #     # 如果是数组中的对象
-                #     if k == 'type':
-                #         # 添加
-                #         objs.append(r)
-                #         namespace[r.name]=r
+                r = parseObj("\n".join(j), game, n+1, namespace)
+                # objs.append(r)
+                # namespace[r.name]=r[r.name]
+                # 查找便利结果
+                for k in r:
+                    # 如果是数组中的对象
+                    if k != '__uuid' and r[k].type != None:
+                        # 添加
+                        objs.append(r[k])
+                        namespace[r[k].name] = r[k]
 
             # 设置属性
             property = l.split(":")[0]
@@ -299,7 +303,7 @@ def parseObj(text, game, defaultS,namespace=None):
         else:
             # 获得属性和值的字符串
             property, value = l.split(":")
-            
+
             # 解析值
             v = parseValue(value, g)
 
@@ -333,6 +337,8 @@ def newObj(obj, game):
     # 对象的参数们
     l = []
     for arg in tools.classes[data.type][0]:
+        if arg == 'id':
+            arg = 'name'
         # 如果有这个参数
         if data.has(arg):
             # 将每个参数解析并添加到参数列表
@@ -341,15 +347,26 @@ def newObj(obj, game):
     o = tools.classes[data.type][1](*l)
     # 将剩余属性赋值给对象
     for sarg in data:
-        if sarg in ('__uuid', 'type') or sarg in tools.classes[data.type][0]:
+        if sarg in ('__uuid', 'type', 'children') or sarg in tools.classes[data.type][0]:
             continue
         if not sarg in l:
             setattr(o, sarg, data[sarg])
+
     # 如果有子对象属性
     if data.has('children'):
         # 递归调用创建子对象
         for j in data.children:
-            o.children.append(newObj(j))
+            #o.children.append(newObj(j, game))
+            o.addChild(newObj(j, game))
+        if getattr(o, 'w', None) != None:
+            for i, j in zip(o.children, data.children):
+                if j.has('align') and getattr(i, 'w', None) != None:
+                    if j.align == 'center':
+                        i.x = o.w / 2 - i.w / 2
+                    if j.align == 'left':
+                        i.x = 0
+                    if j.align == 'right':
+                        i.x = o.w - i.w
     return o
 
 
@@ -375,5 +392,8 @@ def createObj(obj, game):
 
 def parse(fp, game):
     text = openFile(fp)
+    print("file opened!")
     data = parseObj(text, game, 0)
+    print("parse ended!")
     createObj(data, game)
+    print("create ended")
