@@ -1,0 +1,28 @@
+Rect("bg"):
+    w:screen.w
+    h:screen.h
+    color:black
+Text("title"):
+    align:center
+    y:50
+    font:"华文琥珀"
+    fontSize:40
+    textColor:orange
+    text:"Fight"
+ColLayer("m"):
+    y:130
+    children:[
+        Div("roles"):
+            children:[
+                Img("player"):
+                    x:100
+                    sw:4
+                    sh:4
+                    img:assets.player
+                    rows:4
+                    cols:2
+                    row:0
+                    col:0
+            ]
+    ]
+                

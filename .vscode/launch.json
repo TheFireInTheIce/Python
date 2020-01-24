@@ -21,10 +21,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: Main2",
+            "name": "Python: uitest",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/py/main2.py",
+            "program": "${workspaceFolder}/py/uitest.py",
             "console": "integratedTerminal"
         }
     ]

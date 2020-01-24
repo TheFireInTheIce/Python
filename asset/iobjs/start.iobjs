@@ -1,0 +1,16 @@
+Text("title"):
+    align:center
+    y:100
+    text:"RPG 2.0"
+    font:"华文琥珀"
+    fontSize:50
+    bgColor:orange
+    textColor:white
+TextButton("start"):
+    align:center
+    y:screen.h/2-15
+    text:"Start"
+    font:"华文琥珀"
+    fontSize:30
+    bgColor:orange
+    textColor:white

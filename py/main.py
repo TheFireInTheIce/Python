@@ -2,7 +2,7 @@
 import pygame
 import os
 from pygame.locals import *
-import IceEngine as ie
+import ice as ie
 import res
 import time
 
@@ -13,18 +13,9 @@ game.loadImages(res.res)
 
 sscene=ie.Scene("start",game)
 game.switchScene('start')
+ie.iobjs.parse('../asset/iobjs/start.iobjs', game)
 
-text=ie.ui.Text('RPG 2.0')
-text.font="华文琥珀"
-text.fontSize=50
-text.textColor=(255,150,0,255)
-text.x=300-text.w/2
-text.y=100
-sscene.addSprite(text)
-
-sbutton=ie.ui.TextButton('Start',(255,255,255,255),(255,150,0,255),30,"华文琥珀")
-sscene.addSprite(sbutton)
-sbutton.x=300-sbutton.w/2
+sbutton = game.currentScene.findSprite('start')
 sbutton.y=300-sbutton.h/2
 sbutton.on(ie.event.events.click,lambda event,this: game.switchScene('main'))
 scene = ie.Scene("main", game)
@@ -33,7 +24,7 @@ maps,mapObjects=ie.map.loadTiled('../asset/map/test.json',game.assets,scene,[6,7
 backMap,frontMap=maps
 frontMap.sw=frontMap.sh=backMap.sw=backMap.sh=2
 
-board=ie.ui.MultiLineText("")
+board=ie.ui.MultiLineText("stateBoard","")
 board.fontSize=20
 board.textColor=(255,255,255,255)
 board.bgColor=(0,0,0,255)
@@ -50,12 +41,39 @@ ways=ie.tools.dic({
 
 tileSize=32
 playerMaxScreenPos=500
-playerMinScreenPos=100
+playerMinScreenPos = 100
+
+storeScene = ie.Scene('store', game)
+game.switchScene('store')
+ie.iobjs.parse("../asset/iobjs/store.iobjs",game)
+game.switchScene('start')
+
+state = ie.State(game)
+
+@ie.Class('id name value'.split(' '))
+class N(ie.EventObj):
+    def __init__(self, id, name, value=0):
+        super().__init__()
+        self.name=name
+        state[name]=value
+        self.s = ie.ui.Text(id, name + ": " + str(value))
+        self.s.fontSize = 30
+        self.s.font = '华文琥珀'
+        self.s.align = 'right'
+        self.s.x = -10
+        self.s.y=10
+        self.s.textColor=(255,255,255)
+        self.s.on(name + '.change', self.onChange)
+        game.hud.addSprite(self.s)
+    def onChange(self, e, this):
+        self.s.text = self.name+": "+str(e.data.newValue)
+    
+
 @ie.Class('name x y a'.split(" "))
 class Role(ie.component.ComponentObj):
     def __init__(self,name,x,y,sdata:dict):
         super().__init__()
-        self.s=ie.sprite.Sprite(name,game.assets[sdata['img']],sdata['rows'],sdata['cols'])
+        self.s=ie.sprite.ISprite(name,game.assets[sdata['img']],sdata['rows'],sdata['cols'])
         self.x=x
         self.y=y
         self.vx=0
@@ -107,7 +125,7 @@ class Role(ie.component.ComponentObj):
         ny=self.y//tileSize*tileSize+ways[w][1]*tileSize+tileSize/2
         return int(nx),int(ny)
 
-     
+    
     def getObjInFront(self):
         return frontMap.getPoint(self.x+ways[w][0]*tileSize/2,self.y+ways[w][0]*tileSize/2)
 
@@ -118,30 +136,8 @@ class Role(ie.component.ComponentObj):
         elif item=='y':
             self.s.y=self.y
 
-@ie.Class("asset name x y t".split(" "))
-class ObjNpc(Role):
-    ws=['up','right','down','left']
-    def __init__(self,asset,name,x,y,t):
-        super().__init__(name,x*tileSize,y*tileSize,{'img':asset,'rows':1,'cols':8})
-        self.wi=0
-        self.wii=0
-        self.on('walkStop',self.cwalk)
-        self.cwalk(None,None)
-    def cwalk(self,event,this):
-        if not self.wii:
-            self.wii=True
-        else:
-            self.wii=False
-            self.wi=(self.wi+1)%len(self.ws)
-            self.w=self.ws[self.wi]
-        self.walking=True
-        self.vx=self.speed*ways[self.w][0]
-        self.vy=self.speed*ways[self.w][1]
-    def walk(self,this,time):
-        self.walkFunction(this,time)
-        if self.walking:self.s.frames.update()
 
-@ie.Class("name x y t says".split(" "))
+@ie.Class("name x y mode says".split(" "))
 class MapNPC(Role):
     def __init__(self,name,x,y,t,says):
         super().__init__(name,x*tileSize,y*tileSize,{'img':'sprites','rows':1,'cols':8})
@@ -155,20 +151,34 @@ class MapNPC(Role):
             board.text=text
         return c
     def say(self,board):
-        # print(self.says[self.sayIndex])
-        # board.text=self.says[self.sayIndex]
-        # self.sayIndex=(self.sayIndex+1)%len(self.says)
-        
         for i in range(len(self.says)):
             ie.tools.setTimeOut(self.zsq(self.says[i]),i*2)
         ie.tools.setTimeOut(self.zsq(""),len(self.says)*2)
+
+
+@ie.Class('name x y mode says'.split(' '))
+class Cat(MapNPC):
+    def say(self, board):
+        super().say(board)
+        def storeInit():
+            game.switchScene('store')
+            s = game.currentScene
+            exitf=lambda a,b: game.switchScene('main')
+            s.findSprite("exit").on(ie.events.click,exitf)
+        ie.setTimeOut(storeInit, 2 * 0)
+        
+@ie.Class('name x y mode says'.split(' '))
+class Tracer(MapNPC):
+    def say(self, board):
+        super().say(board)
+        state.gold += 10
 
 @ie.Class("x y".split(" "))
 class Player(Role):
     def __init__(self,x,y):
         super().__init__('player',x,y,{'img':'player','rows':4,'cols':2})
         self.s.addComponent(ie.component.Component(self.input))
-        self.water=ie.sprite.Sprite('halfWater',game.assets.sprites,1,8)
+        self.water=ie.sprite.ISprite('halfWater',game.assets.sprites,1,8)
         self.water.frames.setFrame(0,2)
         self.water.sw=2
         self.water.sh=2
@@ -212,7 +222,6 @@ class Player(Role):
         if npc==None:
             pass
         else:
-            print("npc!")
             npc.say(board)
             
 
@@ -227,8 +236,19 @@ scene.insertSprite(frontMap,p.s)
 npcs=[]
 
 for i in mapObjects:
-    npcs.append(MapNPC(i['name'],i['x'],i['y'],int(i['type'])-1,i['args']['says']))
-    scene.addSprite(npcs[-1].s)
+    l = []
+    c = ie.classes[i.type]
+    for a in c[0]:
+        v = i[a]
+        if a == 'mode':
+            v-=1
+        l.append(v)
+    o=c[1](*l)
+    #npcs.append(MapNPC(i['name'],i['x'],i['y'],int(i['type'])-1,i['args']['says']))
+    npcs.append(o)
+    scene.addSprite(o.s)
+
+goldN=N('gold','gold',0)
 
 if __name__ == "__main__":
     game.start()
