@@ -34,3 +34,6 @@ c.store1price = 50
 c.store2price = 100
 c.store3price = 190
 c.store4price = 60
+
+c.storeNames = ('Sword', 'Dragon-Craw', 'Ice-Magic', 'Board')
+

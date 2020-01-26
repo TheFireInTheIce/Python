@@ -244,8 +244,8 @@ class Img(BaseUI):
         self.sheet = sprite.Sheet(img, rows, cols)
         self.row = 0
         self.col = 0
-        self.sx = 0
-        self.sy = 0
+        self.sw = 1
+        self.sh = 1
         self.angle = 0
         self.img = None
     def setImg(self):

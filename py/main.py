@@ -32,6 +32,37 @@ board.bgColor=(0,0,0,255)
 board.x=0
 board.y=0
 game.hud.addSprite(board)
+res.c.storeAssetConfigs = {
+    'Sword': {
+        'asset': game.assets.items,
+        'rows': 1,
+        'cols': 4,
+        'row': 0,
+        'col': 0
+    },
+    'Dragon-Craw': {
+        'asset': game.assets.items,
+        'rows': 1,
+        'cols': 4,
+        'row': 0,
+        'col': 1
+    },
+    'Ice-Magic': {
+        'asset': game.assets.items,
+        'rows': 1,
+        'cols': 4,
+        'row': 0,
+        'col': 2
+    },
+    'Board': {
+        'asset': game.assets.items,
+        'rows': 1,
+        'cols': 4,
+        'row': 0,
+        'col': 3
+    }
+}
+
 
 ways=ie.tools.dic({
     'right':(1,0,2),
@@ -55,6 +86,32 @@ ie.iobjs.parse("../asset/iobjs/fight.iobjs", game)
 game.switchScene('start')
 
 state = ie.State(game)
+
+class Items(ie.ui.RowLayer):
+    def __init__(self, id,x,y):
+        super().__init__(id)
+        self.data = res.c.storeAssetConfigs
+        self.n = 0
+        self.x = x
+        self.y = y
+        self.rowWidth=5
+        self.align = 'center'
+        self.names = set()
+        self.display = 'inline'
+        game.hud.addSprite(self)
+    def add(self, name):
+        if name in self.names:
+            return
+        else:
+            self.names.add(name)
+        if name in self.data:
+            d=self.data[name]
+            o=ie.ui.Img(self.id+"-item-"+str(self.n),d['asset'],d['rows'],d['cols'])
+            o.row = d['row']
+            o.col = d['col']
+            o.sw = 2
+            o.sh = 2
+            self.addChild(o)
 
 @ie.Class('id name value'.split(' '))
 class N(ie.EventObj):
@@ -181,9 +238,13 @@ class Cat(MapNPC):
     def setPrice(self, s):
         for i in range(1, 5):
             def f(x):
+                if res.c.storeNames[x - 1] in p.items.names:
+                    ie.setTimeOut(lambda: self.say(['你也太贪心了，竟然又想买一个，想的美！'], board), 0.1)
+                    return
                 price=res.c['store' + str(x) + 'price']
                 if (state['gold'] >= res.c['store' + str(x) + 'price']):
                     state['gold'] -= price
+                    p.items.add(res.c.storeNames[x-1])
                 else:
                     ie.setTimeOut(lambda:self.say(['天哪，你个穷鬼！','才'+str(state['gold'])+'块钱就想买走它！'],board),0.1)
             f=self.makeF(f,i)
@@ -278,6 +339,7 @@ class Player(Role):
         self.fspeed = res.c.playerSpeed
         self.helpHp = res.c.playerHelpHp
 
+        self.items=Items('player-items',0,game.screen.screen.get_height()-32-10)
     def walk(self,this,time):
         self.updateScreenPos()
         self.walkFunction(this,time)
@@ -348,7 +410,7 @@ for i in mapObjects:
     npcs.append(o)
     scene.addSprite(o.s)
 
-goldN=N('gold','gold',100)
+goldN=N('gold','gold',1000)
 
 if __name__ == "__main__":
     game.start()

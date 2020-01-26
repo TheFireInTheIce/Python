@@ -6,16 +6,17 @@ from . import scene
 class Screen:
     def __init__(self, name, wh, game):
         self.w, self.h = wh
-        self.x = 0
-        self.y = 0
         self.game = game
         self.screen = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption(name)
 
+    def getScene(self):
+        return self.game.currentScene
+
     def blit(self, img, pos):
         ix, iy = pos
-        self.screen.blit(img, (ix-self.game.currentScene.x,
-                               iy-self.game.currentScene.y))
+        self.screen.blit(img, (ix-self.getScene().x,
+                               iy-self.getScene().y))
 
     def fill(self, color):
         self.screen.fill(color)
@@ -39,8 +40,6 @@ class Screen:
 
 class HUD(Screen):
     def __init__(self, wh, game):
-        self.x = 0
-        self.y = 0
         self.w, self.h = wh
         self.game = game
         self.screen = pygame.Surface((self.w, self.h)).convert_alpha()
@@ -49,3 +48,6 @@ class HUD(Screen):
         self.removeSprite = self.scene.removeSprite
         self.insertSprite = self.scene.insertSprite
         self.findSprite = self.scene.findSprite
+
+    def getScene(self):
+        return self.scene
