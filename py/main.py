@@ -5,6 +5,7 @@ from pygame.locals import *
 import ice as ie
 import res
 import time
+import random
 
 
 game = ie.Game()
@@ -149,56 +150,134 @@ class MapNPC(Role):
         super().__init__(name,x*tileSize,y*tileSize,{'img':'sprites','rows':1,'cols':9})
         self.s.frames.setFrame(0,t)
         self.says=says.split('\n')
-        self.sayIndex=0
     def walk(self,this,time):
         self.walkFunction(this,time)
     def zsq(self,text):
         def c():
             board.text=text
         return c
-    def say(self,board):
-        for i in range(len(self.says)):
-            ie.tools.setTimeOut(self.zsq(self.says[i]),i*2)
-        ie.tools.setTimeOut(self.zsq(""),len(self.says)*2)
+    def say(self,says,board):
+        for i in range(len(says)):
+            ie.tools.setTimeOut(self.zsq(says[i]),i*2)
+        ie.tools.setTimeOut(self.zsq(""),len(says)*2)
 
 
 @ie.Class('name x y mode says'.split(' '))
 class Cat(MapNPC):
-    def say(self, board):
-        super().say(board)
+    def say(self,says, board):
+        super().say(says,board)
         def storeInit():
             game.switchScene('store')
             s = game.currentScene
+            self.setPrice(s)
             exitf=lambda a,b: game.switchScene('main')
             s.findSprite("exit").on(ie.events.click,exitf)
         ie.setTimeOut(storeInit, 2 * 0)
+    def makeF(self, f, i):
+        def m(event, this):
+            x = i
+            f(x)
+        return m
+    def setPrice(self, s):
+        for i in range(1, 5):
+            def f(x):
+                price=res.c['store' + str(x) + 'price']
+                if (state['gold'] >= res.c['store' + str(x) + 'price']):
+                    state['gold'] -= price
+                else:
+                    ie.setTimeOut(lambda:self.say(['天哪，你个穷鬼！','才'+str(state['gold'])+'块钱就想买走它！'],board),0.1)
+            f=self.makeF(f,i)
+            s.findSprite("Buy"+str(i)).on(ie.events.click, f)
         
 @ie.Class('name x y mode says'.split(' '))
 class Tracer(MapNPC):
-    def say(self, board):
-        super().say(board)
-        state.gold += 10
+    def say(self,says, board):
+        super().say(says,board)
+        state['gold'] += 10
 
 @ie.Class('name x y mode says'.split(' '))
 class BadMan(MapNPC):
-    def say(self, board):
-        super().say(board)
+    def __init__(self, name, x, y, mode, says):
+        super().__init__(name, x, y, mode, says)
+        self.hp = res.c.enemyHp
+        self.fight = res.c.enemyFight
+        self.dun = res.c.enemyDun
+        self.fspeed = res.c.enemySpeed
+        self.helpHp=res.c.enemyHelpHp
+    def say(self,says, board):
+        super().say(says,board)
         game.switchScene('fight')
         s = game.currentScene
+        self.sc = s
+        self.p = p
+        self.show()
         exitf=lambda a,b: game.switchScene('main')
-        s.findSprite("run").on(ie.events.click,exitf)
+        self.sc.findSprite("run").on(ie.events.click, exitf)
+        self.sc.findSprite("fight").on(ie.events.click, self.onFight)
+        self.sc.findSprite("help").on(ie.events.click, self.onHelp)
+    def show(self):
+        self.sc.findSprite('playerHP').text = "血量:" + str(self.p.hp)
+        self.sc.findSprite('playerFight').text = "攻击力:" + str(self.p.fight)
+        self.sc.findSprite('playerDun').text = "防御力:" + str(self.p.dun)
+        self.sc.findSprite('playerSpeed').text = "灵活度:" + str(self.p.fspeed)
 
+        self.sc.findSprite('enemyHP').text = "血量:" + str(self.hp)
+        self.sc.findSprite('enemyFight').text = "攻击力:" + str(self.fight)
+        self.sc.findSprite('enemyDun').text = "防御力:" + str(self.dun)
+        self.sc.findSprite('enemySpeed').text = "灵活度:" + str(self.fspeed)
+    
+    def DoFight(self):
+        jl = random.randint(1, 100)
+        if jl <= self.p.speed:
+            return
+        else:
+            self.p.hp -= self.fight - self.p.dun
+
+    def help(self):
+        self.hp += self.helpHp
+    
+    def JZ(self):
+        if self.hp <= 4 and random.randint(1, 100) < 40:
+            print("help")
+            self.help()
+        else:
+            self.DoFight()
+        self.show()
+    def PD(self):
+        if self.hp <= 0:
+            state['gold'] += 20
+            game.switchScene("main")
+            npcs.remove(self)
+            scene.removeSprite(self.s)
+    def onFight(self, event, this):
+        self.p.doFight(self)
+        self.JZ()
+        self.PD()
+    def onHelp(self,event,this):
+        self.p.help()
+        self.JZ()
+        self.PD()
+        
 @ie.Class("x y".split(" "))
 class Player(Role):
     def __init__(self,x,y):
         super().__init__('player',x,y,{'img':'player','rows':4,'cols':2})
+        
         self.s.addComponent(ie.component.Component(self.input))
+        
         self.water=ie.sprite.ISprite('halfWater',game.assets.sprites,1,9)
         self.water.frames.setFrame(0,2)
         self.water.sw=2
         self.water.sh=2
         self.s.addChild(self.water)
         scene.on(ie.event.events.keydown,self.onSpace)
+
+        self.hp = res.c.playerHp
+        self.fight = res.c.playerFight
+        self.dun = res.c.playerDun
+        self.fspeed = res.c.playerSpeed
+        self.helpHp = res.c.playerHelpHp
+
     def walk(self,this,time):
         self.updateScreenPos()
         self.walkFunction(this,time)
@@ -237,16 +316,22 @@ class Player(Role):
         if npc==None:
             pass
         else:
-            npc.say(board)
-            
-
+            npc.say(npc.says,board)
+    def doFight(self, e):
+        jl = random.randint(1, 100)
+        if jl <= e.speed:
+            return
+        else:
+            e.hp -= self.fight - e.dun
+    def help(self):
+        self.hp += self.helpHp
 
     
 
 
 
-p=Player(2*tileSize,5*tileSize)
-scene.insertSprite(frontMap,p.s)
+p=Player(19*tileSize,16*tileSize)
+scene.insertSprite(backMap,p.s)
 
 npcs=[]
 
@@ -263,7 +348,7 @@ for i in mapObjects:
     npcs.append(o)
     scene.addSprite(o.s)
 
-goldN=N('gold','gold',0)
+goldN=N('gold','gold',100)
 
 if __name__ == "__main__":
     game.start()

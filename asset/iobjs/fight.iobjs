@@ -53,11 +53,11 @@ ColLayer("m"):
                         Text("playerHP"):
                             text:"血量:"
                             fontSize:20
-                        Text("playerTool"):
-                            text:"武器:"
+                        Text("playerFight"):
+                            text:"攻击力:"
                             fontSize:20
                         Text("playerDun"):
-                            text:"防具:"
+                            text:"防御力:"
                             fontSize:20
                         Text("playerSpeed"):
                             text:"灵活度:"
@@ -70,11 +70,11 @@ ColLayer("m"):
                         Text("enemyHP"):
                             text:"血量:"
                             fontSize:20
-                        Text("enemyTool"):
-                            text:"武器:"
+                        Text("enemyFight"):
+                            text:"攻击力:"
                             fontSize:20
                         Text("enemyDun"):
-                            text:"防具:"
+                            text:"防御力:"
                             fontSize:20
                         Text("enemySpeed"):
                             text:"灵活度:"

@@ -69,7 +69,7 @@ class Game(event.EventObj):
         self.hud.fill((0, 0, 0, 0))
         self.draw()
         self.scenes[self.scene].draw(self.screen)
-        self.hud.scene.draw(self.hud)
+        self.hud.scene.draw(self.hud.screen)
         self.screen.screen.blit(self.hud.screen, (0, 0))
         pygame.display.update()
 

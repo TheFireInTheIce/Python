@@ -29,7 +29,7 @@ Div("div"):
                             row:0 
                             sw:4
                             sh:4
-                        TextButton("swordButton"):
+                        TextButton("Buy1"):
                             align:"center"
                             text:"Buy"
                             bgColor:orange
@@ -48,7 +48,7 @@ Div("div"):
                             row:0 
                             sw:4
                             sh:4
-                        TextButton("dragonClawButton"):
+                        TextButton("Buy2"):
                             align:"center"
                             text:"Buy"
                             bgColor:orange
@@ -67,7 +67,7 @@ Div("div"):
                             row:0    
                             sw:4
                             sh:4
-                        TextButton("magicButton"):
+                        TextButton("Buy3"):
                             align:"center"
                             text:"Buy"
                             bgColor:orange
@@ -86,7 +86,7 @@ Div("div"):
                             row:0 
                             sw:4
                             sh:4
-                        TextButton("boardButton"):
+                        TextButton("Buy4"):
                             align:"center"
                             text:"Buy"
                             bgColor:orange
