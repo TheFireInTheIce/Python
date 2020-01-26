@@ -2,7 +2,7 @@
     "cSpell.words": [
         "iobjs"
     ],
-    "python.pythonPath": "C:\\Program Files\\Python37\\python37.exe",
+    "python.pythonPath": "C:\\Program Files (x86)\\Python38\\python.exe",
     "files.associations": {
         "**/templates/*.html": "django-html",
         "**/templates/*": "django-txt",
