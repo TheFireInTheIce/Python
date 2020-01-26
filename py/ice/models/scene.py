@@ -9,6 +9,8 @@ class Scene(event.EventObj):
         self.sprites = []
         self.w = game.screen.w
         self.h = game.screen.h
+        self.x = 0
+        self.y = 0
         game.addScene(self)
 
     def addSprite(self, sprite):

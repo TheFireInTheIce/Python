@@ -4,16 +4,18 @@ from . import scene
 
 
 class Screen:
-    def __init__(self, name, wh):
+    def __init__(self, name, wh, game):
         self.w, self.h = wh
         self.x = 0
         self.y = 0
+        self.game = game
         self.screen = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption(name)
 
     def blit(self, img, pos):
         ix, iy = pos
-        self.screen.blit(img, (ix-self.x, iy-self.y))
+        self.screen.blit(img, (ix-self.game.currentScene.x,
+                               iy-self.game.currentScene.y))
 
     def fill(self, color):
         self.screen.fill(color)
@@ -28,8 +30,11 @@ class Screen:
     def fillCircle(self, x, y, r, color):
         pygame.draw.circle(self.screen, color, (x, y), r)
 
-    def strokeCircle(selfx, y, r, color, lineWidth=1):
+    def strokeCircle(self, x, y, r, color, lineWidth=1):
         pygame.draw.circle(self.screen, color, (x, y), r, lineWidth)
+
+    def drawLine(self, sx, sy, ex, ey, color, lineWidth=1):
+        pygame.draw.line(self.screen, color, (sx, sy), (ex, ey), lineWidth)
 
 
 class HUD(Screen):
@@ -37,6 +42,7 @@ class HUD(Screen):
         self.x = 0
         self.y = 0
         self.w, self.h = wh
+        self.game = game
         self.screen = pygame.Surface((self.w, self.h)).convert_alpha()
         self.scene = scene.Scene('HDCLayer', game)
         self.addSprite = self.scene.addSprite

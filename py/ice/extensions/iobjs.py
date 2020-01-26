@@ -16,7 +16,10 @@ defaultNamespace = tools.dic({
     'purple': (160, 32, 240),
     'left': 'left',
     'center': 'center',
-    'right':'right'
+    'right': 'right',
+    'inline': 'inline',
+    'block': 'block',
+    'dispersed':'dispersed'
 })
 
 def openFile(fp):
@@ -316,7 +319,7 @@ def parseObj(text, game, defaultS, namespace=None):
             i = ek-1
         else:
             # 获得属性和值的字符串
-            property, value = l.split(":")
+            property, value = l.split(":")[0],":".join(l.split(":")[1:])
 
             # 解析值
             v = parseValue(value, g)

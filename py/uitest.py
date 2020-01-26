@@ -7,9 +7,10 @@ game.loadImages(res)
 s = ice.Scene("mainScene", game)
 game.switchScene("mainScene")
 
-ice.iobjs.parse("../asset/iobjs/fight.iobjs", game)
+ice.iobjs.parse("../asset/iobjs/store.iobjs", game)
 
 # s.findSprite('sword').on(10, lambda a, b: print(a, b))
 # s.findSprite('swordButton').on(ice.events.click, lambda e,
 #                                this: game.addEvent(ice.UserEvent(10, ice.dic())))
+game
 game.start()

@@ -20,7 +20,7 @@ sbutton.y=300-sbutton.h/2
 sbutton.on(ie.event.events.click,lambda event,this: game.switchScene('main'))
 scene = ie.Scene("main", game)
 
-maps,mapObjects=ie.map.loadTiled('../asset/map/test.json',game.assets,scene,[6,7,8])
+maps,mapObjects=ie.map.loadTiled('../asset/map/main.json',game.assets,scene,[])
 backMap,frontMap=maps
 frontMap.sw=frontMap.sh=backMap.sw=backMap.sh=2
 
@@ -46,6 +46,11 @@ playerMinScreenPos = 100
 storeScene = ie.Scene('store', game)
 game.switchScene('store')
 ie.iobjs.parse("../asset/iobjs/store.iobjs",game)
+
+fightScene = ie.Scene('fight', game)
+game.switchScene('fight')
+ie.iobjs.parse("../asset/iobjs/fight.iobjs", game)
+
 game.switchScene('start')
 
 state = ie.State(game)
@@ -88,15 +93,16 @@ class Role(ie.component.ComponentObj):
         self.walkFunction(this,time)
         if self.walking:self.s.frames.update()
     def updateScreenPos(self):
-        if self.x-game.screen.x>=playerMaxScreenPos and game.screen.x+game.screen.w<frontMap.w*frontMap.bw:
-            game.screen.x+=2*self.speed
-        if self.x-game.screen.x<=playerMinScreenPos and game.screen.x>0:
-            game.screen.x-=2*self.speed
+        s=game.currentScene
+        if self.x-s.x>=playerMaxScreenPos and s.x+s.w<frontMap.w*frontMap.bw:
+            s.x+=2*self.speed
+        if self.x-s.x<=playerMinScreenPos and s.x>0:
+            s.x-=2*self.speed
 
-        if self.y-game.screen.y>=playerMaxScreenPos and game.screen.y+game.screen.h<frontMap.h*frontMap.bh:
-            game.screen.y+=2*self.speed
-        if self.y-game.screen.y<=playerMinScreenPos and game.screen.y>0:
-            game.screen.y-=2*self.speed
+        if self.y-s.y>=playerMaxScreenPos and s.y+s.h<frontMap.h*frontMap.bh:
+            s.y+=2*self.speed
+        if self.y-s.y<=playerMinScreenPos and s.y>0:
+            s.y-=2*self.speed
     def walkFunction(self,this,time):
         if self.walking:
             if self.vx!=0:
@@ -140,7 +146,7 @@ class Role(ie.component.ComponentObj):
 @ie.Class("name x y mode says".split(" "))
 class MapNPC(Role):
     def __init__(self,name,x,y,t,says):
-        super().__init__(name,x*tileSize,y*tileSize,{'img':'sprites','rows':1,'cols':8})
+        super().__init__(name,x*tileSize,y*tileSize,{'img':'sprites','rows':1,'cols':9})
         self.s.frames.setFrame(0,t)
         self.says=says.split('\n')
         self.sayIndex=0
@@ -173,12 +179,21 @@ class Tracer(MapNPC):
         super().say(board)
         state.gold += 10
 
+@ie.Class('name x y mode says'.split(' '))
+class BadMan(MapNPC):
+    def say(self, board):
+        super().say(board)
+        game.switchScene('fight')
+        s = game.currentScene
+        exitf=lambda a,b: game.switchScene('main')
+        s.findSprite("run").on(ie.events.click,exitf)
+
 @ie.Class("x y".split(" "))
 class Player(Role):
     def __init__(self,x,y):
         super().__init__('player',x,y,{'img':'player','rows':4,'cols':2})
         self.s.addComponent(ie.component.Component(self.input))
-        self.water=ie.sprite.ISprite('halfWater',game.assets.sprites,1,8)
+        self.water=ie.sprite.ISprite('halfWater',game.assets.sprites,1,9)
         self.water.frames.setFrame(0,2)
         self.water.sw=2
         self.water.sh=2
@@ -208,7 +223,7 @@ class Player(Role):
             self.vy=0
             self.walking=False
         self.water.show=backMap.getPoint(self.x,self.y)==1
-        self.speed=1 if backMap.getPoint(self.x,self.y)==1 else 2
+        self.speed=2 if backMap.getPoint(self.x,self.y)==1 else 4
     def getObjInFront(self):
         dx,dy=ways[self.w][:-1]
         nx,ny=self.x//tileSize+dx,self.y//tileSize+dy

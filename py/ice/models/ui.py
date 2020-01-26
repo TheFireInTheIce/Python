@@ -24,7 +24,7 @@ class BaseUI(component.ComponentObj):
 
     def setpos(self):
         if self.align == 'right':
-            self.px = self.father.w -self.w+ self.x
+            self.px = self.father.w - self.w+  self.x
         elif self.align == 'left':
             self.px = self.x
         elif self.align == 'center':
@@ -359,6 +359,7 @@ class ColLayer(Div):
     def __init__(self, id):
         super().__init__(id)
         self.rowHeight = 10
+        self.display='inline'
 
     def step(self, time):
         super().step(time)

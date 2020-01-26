@@ -34,7 +34,7 @@ class Game(event.EventObj):
         assert self.screen == None, "当前屏幕对象不为空,已经进行过初始化,不能再次初始化"
         pygame.init()
         #self.screen = pygame.display.set_mode((width, height))
-        self.screen = screen.Screen(title, (width, height))
+        self.screen = screen.Screen(title, (width, height), self)
         self.hud = screen.HUD((width, height), self)
 
     def addScene(self, scene: scene.Scene):

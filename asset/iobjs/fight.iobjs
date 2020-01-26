@@ -1,15 +1,16 @@
 Rect("bg"):
     w:screen.w
     h:screen.h
-    color:black
+    color:(139,0,0)
 Text("title"):
     align:center
     y:50
     font:"华文琥珀"
-    fontSize:40
-    textColor:orange
+    fontSize:60
+    textColor:black
     text:"Fight"
 ColLayer("m"):
+    display:block
     y:130
     children:[
         Div("roles"):
@@ -21,8 +22,100 @@ ColLayer("m"):
                     img:assets.player
                     rows:4
                     cols:2
-                    row:0
+                    row:2
                     col:0
+                Img("enemy"):
+                    x:-100
+                    align:right
+                    sw:4
+                    sh:4
+                    img:assets.enemy1
+                    rows:4
+                    cols:2
+                    row:3
+                    col:0
+            ]
+        Line("line"):
+            sy:195
+            ey:sy
+            sx:50
+            ex:screen.w-50
+            color:black
+            lineWidth:5
+        Div("nums"):
+            y:100
+            display:"block"
+            children:[
+                ColLayer("playerNums"):
+                    align:left
+                    x:100
+                    children:[
+                        Text("playerHP"):
+                            text:"血量:"
+                            fontSize:20
+                        Text("playerTool"):
+                            text:"武器:"
+                            fontSize:20
+                        Text("playerDun"):
+                            text:"防具:"
+                            fontSize:20
+                        Text("playerSpeed"):
+                            text:"灵活度:"
+                            fontSize:20
+                    ]
+                ColLayer("enemyNums"):
+                    align:right
+                    x:-100
+                    children:[
+                        Text("enemyHP"):
+                            text:"血量:"
+                            fontSize:20
+                        Text("enemyTool"):
+                            text:"武器:"
+                            fontSize:20
+                        Text("enemyDun"):
+                            text:"防具:"
+                            fontSize:20
+                        Text("enemySpeed"):
+                            text:"灵活度:"
+                            fontSize:20
+                    ]
+            ]
+        RowLayer("buttons"):
+            y:300
+            mode:"dispersed"
+            children:[
+                ColLayer("fightCol"):
+                    display:inline
+                    minW:100
+                    x:20
+                    children:[
+                        TextButton("fight"):
+                            text:"攻击"
+                            bgColor:red
+                            textColor:white
+                    ]
+
+                ColLayer("runCol"):
+                    minW:100
+                    display:inline
+                    children:[
+                        TextButton("run"):
+                            text:"逃跑"
+                            bgColor:green
+                            textColor:white
+                    ]
+                    
+                ColLayer("helpCol"):
+                    minW:100
+                    display:inline
+                    x:-20
+                    children:[
+                        TextButton("help"):
+                            text:"回血"
+                            bgColor:yellow 
+                            textColor:white
+                    ]   
             ]
     ]
                 

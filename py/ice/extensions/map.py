@@ -64,7 +64,8 @@ class TiledSet(component.ComponentObj):
             ix.append(line)
         for i in range(len(self.mapData)):
             for j in range(len(self.mapData[i])):
-                if (n := self.imgData[self.mapData[i][j]]) != None:
+                n = self.imgData[self.mapData[i][j]]
+                if n != None:
                     screen.blit(ix[n[0]][n[1]],
                                 (self.x+j*self.bw, self.y+i*self.bh))
 
